@@ -18,10 +18,21 @@ app.setErrorHandler((error, _req, reply) => {
   return reply.code(500).send({ error: 'internal' });
 });
 
+// The planner's row estimate is instant, unlike count(*) on ~800k rows; the app calls this to test the server.
 app.get('/health', async () => {
-  const [{ count }] = await sql<{ count: number }[]>`select count(*)::int as count from foods`;
+  const [{ count }] = await sql<
+    { count: number }[]
+  >`select reltuples::int as count from pg_class where relname = 'foods'`;
   return { status: 'ok', foods: count };
 });
+
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.once(signal, async () => {
+    await app.close();
+    await sql.end();
+    process.exit(0);
+  });
+}
 
 await app.register(foodRoutes);
 await app.listen({ host: CONFIG.host, port: CONFIG.port });

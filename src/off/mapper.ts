@@ -6,6 +6,7 @@ import { buildNutrients, parseAmount, type MicroDef } from '../foods/nutrients.j
 const GRAMS_TO_UNIT: Record<MicroDef['unit'], number> = { mg: 1e3, µg: 1e6 };
 const KJ_PER_KCAL = 4.184;
 const MAX_NAME_LENGTH = 200;
+const MAX_SERVING_G = 5000;
 
 /** Flat record: CSV columns, or an API product merged with its `nutriments` object. */
 export type OffRecord = Record<string, unknown>;
@@ -27,7 +28,7 @@ export function mapOffRecord(r: OffRecord): Food | null {
     brand: text(r.brands)?.split(',')[0].trim() || null,
     barcode: code,
     servingLabel: text(r.serving_size),
-    servingG: servingG && servingG > 0 ? servingG : null,
+    servingG: servingG && servingG > 0 && servingG <= MAX_SERVING_G ? servingG : null,
     ...nutrients,
     popularity: Math.trunc(parseAmount(r.unique_scans_n) ?? 0),
   };

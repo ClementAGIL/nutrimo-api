@@ -10,8 +10,9 @@ The API only reads foods; every personal data stays on the phone.
 
 ## Setup (Windows, once)
 
-1. Install **PostgreSQL 17** with the Windows installer (https://www.postgresql.org/download/windows/), remember the
-   `postgres` password. Create the database: `psql -U postgres -c "create database nutrimo"`.
+1. Install **PostgreSQL 17 or newer** (tested with 18.6) with the Windows installer
+   (https://www.postgresql.org/download/windows/), remember the `postgres` password. `psql` does not need to be on
+   the PATH (e.g. `D:\PostgreSQL\bin\psql.exe`). Create the database: `psql -U postgres -c "create database nutrimo"`.
 2. `npm install`, then copy `.env.example` to `.env` and set `DATABASE_URL`.
 3. `npm run db:migrate`
 4. `npm run import:ciqual` (seconds)

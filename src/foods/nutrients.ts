@@ -76,6 +76,12 @@ export function parseAmount(value: unknown): number | null {
 
 export type Nutrients = Pick<Food, MacroKey | 'micros'>;
 
+/** Open Food Facts contains typos (e.g. 10^47 g of fat): values outside these bounds are dropped. */
+const MAX_KCAL = 950;
+const MAX_GRAMS = 100;
+/** 1 g of a vitamin or mineral per 100 g, in the largest unit used (µg). */
+const MAX_MICRO = 1e6;
+
 /**
  * Builds the nutrient part of a Food. `macro` / `micro` read one value from the source (already in
  * the catalogue unit). Returns null when kcal is unknown, since such a food is useless for counting.
@@ -84,17 +90,20 @@ export function buildNutrients(
   macro: (def: MacroDef) => number | null,
   micro: (def: MicroDef) => number | null,
 ): Nutrients | null {
-  const values = Object.fromEntries(MACROS.map((def) => [def.key, round(macro(def))])) as Record<
-    MacroKey,
-    number | null
-  >;
-  if (values.kcal === null || values.kcal < 0 || values.kcal > 950) return null;
+  const values = Object.fromEntries(
+    MACROS.map((def) => [def.key, inRange(round(macro(def)), def.key === 'kcal' ? MAX_KCAL : MAX_GRAMS)]),
+  ) as Record<MacroKey, number | null>;
+  if (values.kcal === null) return null;
   const micros: Record<string, number> = {};
   for (const def of MICROS) {
-    const v = round(micro(def));
-    if (v !== null && v >= 0) micros[def.key] = v;
+    const v = inRange(round(micro(def)), MAX_MICRO);
+    if (v !== null) micros[def.key] = v;
   }
   return { ...values, kcal: values.kcal, micros };
+}
+
+function inRange(v: number | null, max: number): number | null {
+  return v !== null && v >= 0 && v <= max ? v : null;
 }
 
 function round(v: number | null): number | null {
