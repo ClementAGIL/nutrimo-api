@@ -1,0 +1,5 @@
+node_modules
+data
+docs/PLAN.md
+package-lock.json
+out
