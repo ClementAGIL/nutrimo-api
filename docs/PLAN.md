@@ -153,3 +153,21 @@ README (build, install, backend URL setup) + CLAUDE.md (architecture, convention
   search with PC on (backend results) and with Wi-Fi off (CIQUAL + cache + OFF fallback); scan a barcode; create a
   custom food; build a recipe with a sub-recipe and log 1.5 parts; check the reminder notification; export, wipe
   app data, import → everything restored.
+
+---
+
+## Phase 2 — review + top 5 features (done 2026-10-27)
+
+Review: API search moved to GiST KNN candidates + CIQUAL (15–400 ms instead of 1–4 s), LIKE escaping, bounded OFF
+values, cheap /health, graceful shutdown; app: shared ScrollColumn/SectionCard, lint fixes, Android 12/13
+notification permission handling, fixes found while testing on the phone (onboarding back, layout).
+Developer section (Plus → Développeur): demo history / erase all (asked by the user).
+
+1. ✅ Server backup: POST/GET /backups on nutrimo-api; manual push/restore + daily automatic backup on Wi-Fi.
+2. ✅ Calorie history: 7/30-day bars vs target, averages, days on target, estimated loss.
+3. ✅ Saved meals: save a journal meal, re-add it in one tap (DB v2).
+4. ✅ Physical activity: MET-based or manual kcal, added to the day's budget (DB v3).
+5. ✅ Custom macro targets: presets or custom %, used by the journal bars.
+
+Ideas for later: adaptive TDEE from intake vs weight trend, home-screen widget for quick weigh-in, OFF product
+photos, sync of several devices through the server, export to CSV.
