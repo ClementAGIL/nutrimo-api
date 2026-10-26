@@ -6,7 +6,7 @@ Guidance for Claude (and any contributor) working in this repository. `AGENTS.md
 
 Read-only food search API for the Nutrimo Android app (`../nutrimo-android`). French foods from CIQUAL (generic) and
 Open Food Facts (France, packaged) are imported into PostgreSQL (17+, runs on 18.6 here); the app searches them over the home LAN.
-No user data lives here. The full product plan is in `docs/PLAN.md`.
+User data lives on the phone; this server only keeps copies of its JSON backups (table `backups`). The full product plan is in `docs/PLAN.md`.
 
 ## Stack
 
@@ -34,7 +34,9 @@ src/foods/search.ts    search: 400 nearest names via the GiST trigram index (KNN
 src/ciqual/reader.ts   CIQUAL Excel → Food[]
 src/off/mapper.ts      OFF record (CSV row or API product) → Food
 src/off/api.ts         live OFF product lookup (barcode fallback)
-src/routes/foods.ts    HTTP routes
+src/routes/foods.ts    food HTTP routes
+src/routes/backups.ts  backup routes (raw JSON body up to 50 MB, own content-type parser scoped to the plugin)
+src/backups/repository.ts save (keeps 30 per device) / list / fetch backups
 src/scripts/           migrate, importCiqual, importOff, exportCiqualJson
 ```
 
@@ -51,6 +53,7 @@ src/scripts/           migrate, importCiqual, importOff, exportCiqualJson
 
 ## Status
 
+- ✅ Backups: POST/GET `/backups`, used by the app's manual and daily automatic backup.
 - ✅ Schema, migrations, CIQUAL + OFF importers, search / barcode / id endpoints, CIQUAL JSON export.
 - ✅ Running on the dev PC (PostgreSQL 18.6, service `postgresql-x64-18`, `D:\PostgreSQL`): ~2,300 CIQUAL +
   ~750k French OFF products, ~360 MB. Out-of-range OFF values (typos like 10^47 g of fat) are dropped by

@@ -6,7 +6,7 @@ databases imported into PostgreSQL:
 - **CIQUAL 2020** (ANSES): ~2,300 generic foods with complete vitamins and minerals. The Excel file is stored in `data/`.
 - **Open Food Facts**: products sold in France (packaged foods, barcodes).
 
-The API only reads foods; every personal data stays on the phone.
+The API serves foods, and keeps copies of the app's backups (sent by the phone) so a lost phone can be restored.
 
 ## Setup (Windows, once)
 
@@ -33,6 +33,10 @@ A `docker-compose.yml` is provided as an alternative to the native PostgreSQL in
 | GET    | `/foods/search?q=&limit=&offset=` | `{ items: Food[] }`, accent and typo tolerant, `q` ≥ 2 chars            |
 | GET    | `/foods/barcode/:code`            | `Food`, or 404. Unknown barcodes are fetched live from OFF, then stored |
 | GET    | `/foods/:id`                      | `Food` by id (`ciqual:<code>` or `off:<barcode>`), or 404               |
+
+| POST | `/backups` | Store the app's JSON backup (header `X-Device`), keeps the last 30 per device |
+| GET | `/backups` | `{ items: [{ id, device, createdAt, size }] }` |
+| GET | `/backups/latest`, `/backups/:id` | The backup JSON, or 404 |
 
 When `API_KEY` is set in `.env`, every request except `/health` needs the header `X-Api-Key`.
 

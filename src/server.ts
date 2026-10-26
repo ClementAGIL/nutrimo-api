@@ -3,6 +3,7 @@ import Fastify from 'fastify';
 import { ZodError } from 'zod';
 import { CONFIG } from './config.js';
 import { sql } from './db/client.js';
+import { backupRoutes } from './routes/backups.js';
 import { foodRoutes } from './routes/foods.js';
 
 const app = Fastify({ logger: { level: 'info' } });
@@ -35,4 +36,5 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
 }
 
 await app.register(foodRoutes);
+await app.register(backupRoutes);
 await app.listen({ host: CONFIG.host, port: CONFIG.port });
