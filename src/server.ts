@@ -1,4 +1,4 @@
-// HTTP server entry point: health check, optional API key, food routes.
+// HTTP server entry point: health check, optional API key, food and backup routes.
 import Fastify from 'fastify';
 import { ZodError } from 'zod';
 import { CONFIG } from './config.js';
@@ -9,7 +9,8 @@ import { foodRoutes } from './routes/foods.js';
 const app = Fastify({ logger: { level: 'info' } });
 
 app.addHook('onRequest', async (req, reply) => {
-  if (!CONFIG.apiKey || req.url === '/health') return;
+  // The route pattern, not req.url: a query string ("/health?x") must not bypass or break the exemption.
+  if (!CONFIG.apiKey || req.routeOptions.url === '/health') return;
   if (req.headers['x-api-key'] !== CONFIG.apiKey) return reply.code(401).send({ error: 'unauthorized' });
 });
 

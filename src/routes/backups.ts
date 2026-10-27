@@ -2,6 +2,7 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { backupData, listBackups, saveBackup } from '../backups/repository.js';
+import { notFound } from './replies.js';
 
 /** A year of diary + recipes is a few MB; leave room. */
 export const BACKUP_BODY_LIMIT = 50 * 1024 * 1024;
@@ -31,7 +32,7 @@ export async function backupRoutes(app: FastifyInstance): Promise<void> {
 }
 
 function sendData(reply: FastifyReply, data: string | null) {
-  if (data === null) return reply.code(404).send({ error: 'not_found' });
+  if (data === null) return notFound(reply);
   return reply.type('application/json').send(data);
 }
 

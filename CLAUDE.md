@@ -36,6 +36,7 @@ src/off/mapper.ts      OFF record (CSV row or API product) → Food
 src/off/api.ts         live OFF product lookup (barcode fallback)
 src/routes/foods.ts    food HTTP routes
 src/routes/backups.ts  backup routes (raw JSON body up to 50 MB, own content-type parser scoped to the plugin)
+src/routes/replies.ts  shared error replies (notFound)
 src/backups/repository.ts save (keeps 30 per device) / list / fetch backups
 src/scripts/           migrate, importCiqual, importOff, exportCiqualJson
 ```

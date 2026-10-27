@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { findFoodByBarcode, findFoodById, upsertFoods } from '../foods/repository.js';
 import { searchFoods } from '../foods/search.js';
 import { fetchOffProduct } from '../off/api.js';
+import { notFound } from './replies.js';
 
 const SearchQuery = z.object({
   q: z.string().trim().min(2).max(100),
@@ -19,12 +20,12 @@ export async function foodRoutes(app: FastifyInstance): Promise<void> {
   app.get('/foods/barcode/:code', async (req, reply) => {
     const { code } = BarcodeParams.parse(req.params);
     const food = (await findFoodByBarcode(code)) ?? (await fetchAndStore(code));
-    return food ?? reply.code(404).send({ error: 'not_found' });
+    return food ?? notFound(reply);
   });
 
   app.get('/foods/:id', async (req, reply) => {
     const food = await findFoodById(IdParams.parse(req.params).id);
-    return food ?? reply.code(404).send({ error: 'not_found' });
+    return food ?? notFound(reply);
   });
 }
 
